@@ -20,16 +20,16 @@ class RopGen():
         """
         Constructior
 
-        @param endian: The Endianess, can be big (be) or little endian (le)
-        @type endian: string
+        :param endian: The Endianess, can be big (be) or little endian (le)
+        :type endian: string
 
-        @param filler_byte: The filler character to be used for the exploit string
-        @type filler_byte: string
+        :param filler_byte: The filler character to be used for the exploit string
+        :type filler_byte: string
 
-        @param total_length: The final length of the generated rop string. If this is not specified,
+        :param total_length: The final length of the generated rop string. If this is not specified,
                             length the rop string is as big as it is necessary to encompass all values.
 
-        @type total_length: integer
+        :type total_length: integer
         """
 
         if endian != 'le' and endian != 'be':
@@ -48,14 +48,14 @@ class RopGen():
         """
         Sets a byte value at the specified position
 
-        @param pos: The position where the byte will be placed
-        @type pos: integer
+        :param pos: The position where the byte will be placed
+        :type pos: integer
 
-        @param byte: The byte value
-        @type byte: integer
+        :param byte: The byte value
+        :type byte: integer
 
-        @param desc: Description string
-        @type desc: string
+        :param desc: Description string
+        :type desc: string
         """
         
         self.map[pos] = pack('<B', byte), desc
@@ -65,14 +65,14 @@ class RopGen():
         """
         Sets a word (2 bytes) value at the specified position
 
-        @param pos: The position where the word will be placed
-        @type pos: integer
+        :param pos: The position where the word will be placed
+        :type pos: integer
 
-        @param word: The word value 
-        @type word: integer
+        :param word: The word value 
+        :type word: integer
 
-        @param desc: Description string
-        @type desc: string
+        :param desc: Description string
+        :type desc: string
         """
 
         if self.endian == 'le':
@@ -85,14 +85,14 @@ class RopGen():
         """
         Sets a dword (4 bytes) value at the specified position
 
-        @param pos: The position where the dword will be placed
-        @type pos: integer
+        :param pos: The position where the dword will be placed
+        :type pos: integer
 
-        @param dword: The dword value 
-        @type dword: integer
+        :param dword: The dword value 
+        :type dword: integer
 
-        @param desc: Description string
-        @type desc: string
+        :param desc: Description string
+        :type desc: string
         """     
 
         if self.endian == 'le':
@@ -105,14 +105,14 @@ class RopGen():
         """
         Sets a quad word (8 bytes) value at the specified position
 
-        @param pos: The position where the qword will be placed
-        @type pos: integer
+        :param pos: The position where the qword will be placed
+        :type pos: integer
 
-        @param qword: The dword value 
-        @type qword: integer
+        :param qword: The dword value 
+        :type qword: integer
 
-        @param desc: Description string
-        @type desc: string
+        :param desc: Description string
+        :type desc: string
         """     
 
         if self.endian == 'le':
@@ -125,14 +125,14 @@ class RopGen():
         """
         Sets a string at the specifed position
 
-        @param pos: The position where the string will be placed
-        @type pos: integer
+        :param pos: The position where the string will be placed
+        :type pos: integer
 
-        @param string: The string value 
-        @type sval: string
+        :param string: The string value 
+        :type sval: string
 
-        @param desc: Description string
-        @type desc: string
+        :param desc: Description string
+        :type desc: string
         """        
 
         self.map[pos] = sval, desc
