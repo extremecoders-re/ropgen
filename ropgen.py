@@ -161,7 +161,7 @@ class RopGen():
                 buffer.write(self.filler_byte * (pos-offs))
                 self.desc_table.append((offs, 'Filler Bytes', pos-offs))
                 s, desc = self.map[pos][0], self.map[pos][1]
-                self.desc_table.append((pos, desc, pos-len(s)))
+                self.desc_table.append((pos, desc, len(s)))
                 buffer.write(s)
                 offs += (pos - offs) + len(s)
 
