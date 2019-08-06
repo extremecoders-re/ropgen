@@ -1,30 +1,23 @@
 from struct import pack
-import cStringIO
-
 
 try:
-    from texttable import Texttable
-except:
-    print 'Module texttable is not installed!.'
-    print 'Summarizing exploit as a table will be not available'
-    print 'Run `pip install texttable` to install the package'
-
-
-__author__ = '0xec <extremecoders@hotmail.com>'
-__version__ = '1.0'
-__license__ = 'MIT'
+    # For Python 2
+    from cStringIO import StringIO
+except ImportError:
+    # For Python 3
+    from io import StringIO
 
 
 class RopGen():
-    def __init__(self, endian = 'le', filler_byte = 'A', total_length = 0):
+    def __init__(self, endian = 'le', padding = 'A', total_length = 0):
         """
         Constructior
 
         :param endian: The Endianess, can be big (be) or little endian (le)
         :type endian: string
 
-        :param filler_byte: The filler character to be used for the exploit string
-        :type filler_byte: string
+        :param padding: The filler character to be used for the exploit string
+        :type padding: string
 
         :param total_length: The final length of the generated rop string. If this is not specified,
                             length the rop string is as big as it is necessary to encompass all values.
@@ -34,11 +27,11 @@ class RopGen():
 
         if endian != 'le' and endian != 'be':
             raise Exception('Incorrect endian specified, can be one of big (be) or little (le).')
-        if len(filler_byte) != 1:
-            raise Exception('Filler byte can consist of only 1 character.')
+        if len(padding) != 1:
+            raise Exception('Padding byte can consist of only 1 character.')
 
         self.endian = endian
-        self.filler_byte = filler_byte
+        self.padding = padding
         self.map = {}
         self.total_length = total_length
         self.desc_table = None
@@ -147,7 +140,7 @@ class RopGen():
         """
         curr_offs = 0
         self.desc_table = []
-        buffer = cStringIO.StringIO()
+        buffer = StringIO()
 
         for pos in sorted(self.map):
             if curr_offs > pos:
@@ -156,25 +149,25 @@ class RopGen():
             elif curr_offs == pos:
                 val, desc = self.map[pos][0], self.map[pos][1]
                 self.desc_table.append((curr_offs, desc, len(val)))
-                buffer.write(val)
+                buffer.write(str(val))
                 curr_offs += len(val)
 
             elif curr_offs < pos:
-                num_filler_bytes = pos - curr_offs
-                buffer.write(self.filler_byte * num_filler_bytes)
-                self.desc_table.append((curr_offs, 'Filler Bytes', num_filler_bytes))
+                num_padding_bytes = pos - curr_offs
+                buffer.write(self.padding * num_padding_bytes)
+                self.desc_table.append((curr_offs, 'Padding Bytes', num_padding_bytes))
                 curr_offs = pos
 
                 val, desc = self.map[pos][0], self.map[pos][1]
                 self.desc_table.append((curr_offs, desc, len(val)))
-                buffer.write(val)
+                buffer.write(str(val))
                 curr_offs += len(val)
 
         # Pad with filler bytes
         if curr_offs < self.total_length:
-            num_filler_bytes = self.total_length - curr_offs
-            buffer.write(self.filler_byte * num_filler_bytes)
-            self.desc_table.append((curr_offs, 'Filler Bytes', num_filler_bytes))
+            num_padding_bytes = self.total_length - curr_offs
+            buffer.write(self.padding * num_padding_bytes)
+            self.desc_table.append((curr_offs, 'Padding Bytes', num_padding_bytes))
 
         return buffer.getvalue()        
 
@@ -182,8 +175,12 @@ class RopGen():
     def summarize(self):
         """
         Summarizes the rop string in the form of a nice table.
-        texttable must be installed for this to work.
+
+        :return: Generated table
+        :rtype: string
         """
+
+        from texttable import Texttable
 
         if self.desc_table:
             table = Texttable()
@@ -193,4 +190,4 @@ class RopGen():
             for e in self.desc_table:
                 table.add_row([e[0], e[1], e[2]])
 
-            print table.draw()
+            return table.draw()
