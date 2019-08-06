@@ -145,30 +145,36 @@ class RopGen():
         :return: Generated rop string
         :rtype: string
         """
-        offs = 0
+        curr_offs = 0
         self.desc_table = []
         buffer = cStringIO.StringIO()
 
         for pos in sorted(self.map):
-            if offs > pos:
+            if curr_offs > pos:
                 raise Exception("Parts of the rop string overlap. Please recheck")
-            elif offs == pos:
-                s, desc = self.map[pos][0], self.map[pos][1]
-                self.desc_table.append((offs, desc, len(s)))
-                buffer.write(s)
-                offs += len(s)
-            elif offs < pos:
-                buffer.write(self.filler_byte * (pos-offs))
-                self.desc_table.append((offs, 'Filler Bytes', pos-offs))
-                s, desc = self.map[pos][0], self.map[pos][1]
-                self.desc_table.append((pos, desc, len(s)))
-                buffer.write(s)
-                offs += (pos - offs) + len(s)
+
+            elif curr_offs == pos:
+                val, desc = self.map[pos][0], self.map[pos][1]
+                self.desc_table.append((curr_offs, desc, len(val)))
+                buffer.write(val)
+                curr_offs += len(val)
+
+            elif curr_offs < pos:
+                num_filler_bytes = pos - curr_offs
+                buffer.write(self.filler_byte * num_filler_bytes)
+                self.desc_table.append((curr_offs, 'Filler Bytes', num_filler_bytes))
+                curr_offs = pos
+
+                val, desc = self.map[pos][0], self.map[pos][1]
+                self.desc_table.append((curr_offs, desc, len(val)))
+                buffer.write(val)
+                curr_offs += len(val)
 
         # Pad with filler bytes
-        if offs < self.total_length:
-            buffer.write(self.filler_byte * (self.total_length - offs))
-            self.desc_table.append((offs, 'Filler Bytes', self.total_length - offs))
+        if curr_offs < self.total_length:
+            num_filler_bytes = self.total_length - curr_offs
+            buffer.write(self.filler_byte * num_filler_bytes)
+            self.desc_table.append((curr_offs, 'Filler Bytes', num_filler_bytes))
 
         return buffer.getvalue()        
 
