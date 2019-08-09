@@ -1,6 +1,6 @@
 # Ropgen
 
-A python module to facilitate in the generation of ROP chain exploit strings.
+A python module to facilitate in the generation of ROP chain exploit string, especially for ARM and MIPS architecture.
 
 After we have found out the gadgets which will be used in the ROP chain we need to lay out them. The gadgets needs be placed at specific offsets within the exploit string with filler bytes separating them.
 
